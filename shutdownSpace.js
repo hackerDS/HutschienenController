@@ -5,7 +5,7 @@ var OLD_STATE_FILE = 'laststate';
 var SHUTDOWN_FILE = 'shutdowndone';
 var DOOR_OPEN = 0;
 var DOOR_CLOSED = 1;
-var SECONDS_UNTIL_SHUTDOWN = 60 * 1; // 30 mins
+var SECONDS_UNTIL_SHUTDOWN = 60 * 5; // 5 mins
 
 readDoorStatus(function(doorStatus) {  
   // ensure the laststate file exists
