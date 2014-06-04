@@ -10,7 +10,7 @@ var SECONDS_UNTIL_SHUTDOWN = 60 * 1; // 30 mins
 readDoorStatus(function(doorStatus) {  
   // ensure the laststate file exists
   if(!fs.existsSync(OLD_STATE_FILE)){
-    var content = doorStatus == DOOR_OPEN ? 1 : unixNow();
+    var content = doorStatus == DOOR_OPEN ? DOOR_OPEN : unixNow();
     fs.writeFileSync(OLD_STATE_FILE, content);
   }
 
@@ -21,7 +21,8 @@ readDoorStatus(function(doorStatus) {
     if(fs.existsSync(SHUTDOWN_FILE)){
       fs.unlinkSync(SHUTDOWN_FILE);
     }
-    fs.writeFileSync(OLD_STATE_FILE, '1');
+    fs.writeFileSync(OLD_STATE_FILE, DOOR_OPEN);
+    console.log('door is still open');
     return;
   }
 
@@ -52,7 +53,6 @@ readDoorStatus(function(doorStatus) {
 });
 
 function shutdownMachines(callback) {
-  
   var machines = [
     {name:'192.168.3.22',u:'pi'},
     {name:'192.168.3.26',u:'pi'}
