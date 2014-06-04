@@ -44,10 +44,27 @@ readDoorStatus(function(doorStatus) {
   
   if(timeDiff >= SECONDS_UNTIL_SHUTDOWN){
     console.log('SHUTDOWN');
-    // create the shutdown file to mark we have shut down
-    fs.writeFileSync(SHUTDOWN_FILE, unixNow());
+    shutdownMachines(function(){
+      // create the shutdown file to mark we have shut down
+      fs.writeFileSync(SHUTDOWN_FILE, unixNow());
+    });
   }
 });
+
+function shutdownMachines(callback) {
+  
+  var machines = [
+    {name:'192.168.3.22',u:'pi'},
+    {name:'192.168.3.26',u:'pi'}
+  ]
+  
+  machines.forEach(function(m){
+    var command = 'ssh '+m.u+'@'+m.name+' sudo shutdown -h 0';
+    exec(command);
+  });
+  
+  if(callback) callback();
+}
 
 function readDoorStatus(callback){
   exec('/usr/local/bin/gpio -g read 4', function(err, out){
