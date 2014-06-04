@@ -1,8 +1,8 @@
 var exec = require('child_process').exec;
 var fs = require('fs');
 
-var OLD_STATE_FILE = 'laststate';
-var SHUTDOWN_FILE = 'shutdowndone';
+var OLD_STATE_FILE = __dirname+'/laststate';
+var SHUTDOWN_FILE = __dirname+'/shutdowndone';
 var DOOR_OPEN = 0;
 var DOOR_CLOSED = 1;
 var SECONDS_UNTIL_SHUTDOWN = 60 * 5; // 5 mins
