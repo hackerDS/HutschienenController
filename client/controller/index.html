@@ -1,0 +1,44 @@
+<html>
+  <head>
+    <style>
+
+      body {
+        font-family: Sawasdee;
+      }
+
+      .controlBtn {
+
+        height: 150px;
+        width: 250px;
+        border: 1px solid #cf7a00;
+        background: orange;
+        text-color: white;
+        font-size: 3em;
+        /*box-shadow: 5px 5px 5px #888888;*/
+        border-radius: 5px;
+      }
+
+      .controlBtn:active {
+        background: #ff9600;
+      }
+
+    </style>
+  </head>
+  <body>
+
+    <h1>Oranges Licht</h1>
+    <button onClick="setOrangeLightState(true)" class="controlBtn">AN</button>
+    <button onClick="setOrangeLightState(false)" class="controlBtn">AUS</button>
+
+    <script type="text/javascript" src="/hackerDS/js"></script>
+
+    <script>
+
+      function setOrangeLightState(state) {
+        hackerDS.server.send('orangeLightState', state.toString())
+      }
+
+    </script>
+
+  </body>
+</html>
