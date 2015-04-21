@@ -1,11 +1,12 @@
 var exec = require('child_process').exec;
 var fs = require('fs');
+var request = require('request');
 
 var OLD_STATE_FILE = __dirname+'/laststate';
 var SHUTDOWN_FILE = __dirname+'/shutdowndone';
 var DOOR_OPEN = 0;
 var DOOR_CLOSED = 1;
-var SECONDS_UNTIL_SHUTDOWN = 60 * 5; // 5 mins
+var SECONDS_UNTIL_SHUTDOWN = 60 * 1; // 5 mins
 
 readDoorStatus(function(doorStatus) {  
   // ensure the laststate file exists
@@ -15,13 +16,17 @@ readDoorStatus(function(doorStatus) {
   }
 
   var oldStatus = fs.readFileSync(OLD_STATE_FILE, 'utf8');
-  
+debugger;  
   // if its open, save it was open the last time
   if(doorStatus == DOOR_OPEN) {
     if(fs.existsSync(SHUTDOWN_FILE)){
       fs.unlinkSync(SHUTDOWN_FILE);
     }
     fs.writeFileSync(OLD_STATE_FILE, DOOR_OPEN);
+
+    // ensure the hackerDS system in powered on
+    request.post('http://hutschienenpi:8080/CanBus/regulus/SetPort?port=0&state=1');   
+
     console.log('door is still open');
     return;
   }
@@ -54,14 +59,23 @@ readDoorStatus(function(doorStatus) {
 
 function shutdownMachines(callback) {
   var machines = [
-    {name:'192.168.3.22',u:'pi'},
-    {name:'192.168.3.26',u:'pi'}
+    {name:'pi-display',u:'pi'},
+    {name:'pi-gui',u:'pi'}
   ]
   
   machines.forEach(function(m){
     var command = 'ssh '+m.u+'@'+m.name+' sudo shutdown -h 0';
     exec(command);
   });
+
+  request.post('http://hutschienenpi:8080/Hutschiene/OrangeLight?state=0', function(err){
+    if(err) console.log(err);
+  });
+
+  // shut down the energy
+  setTimeout(function(){
+    request.post('http://hutschienenpi:8080/CanBus/regulus/SetPort?port=0&state=0');
+  }, 1000 * 60 * 2);
   
   if(callback) callback();
 }
@@ -74,4 +88,8 @@ function readDoorStatus(callback){
 
 function unixNow(){
   return Math.round( new Date().getTime()/1000);
+}
+
+module.exports = {
+  doShutdown: shutdownMachines
 }
